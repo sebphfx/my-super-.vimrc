@@ -3,6 +3,12 @@
 
 runtime! debian.vim
 
+"Pathogen--------------------
+
+call pathogen#infect()
+
+source ~/src/vim/bundle/pathogen/autoload/pathogen.vim
+
 " Source a global configuration file if available
 if filereadable("/etc/vim/vimrc.local")
   source /etc/vim/vimrc.local
@@ -11,7 +17,7 @@ endif
 
 "Colors and Fonts-------------------------------
 
-colorscheme peachpuff
+colorscheme solarized
 
 "Text mappings------------------------------------
 
@@ -34,7 +40,6 @@ map \c :tabclose<cr>
 map \sh :source /usr/share/vim/vim73/vimsh.vim<cr>
 
 
-" Uncomment the following to have Vim jump to the last position when
 " reopening a file
 if has("autocmd")
   au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
@@ -44,44 +49,18 @@ endif
 
 syntax on
 
-" Uncomment the following to have Vim load indentation rules and plugins
-" according to the detected filetype.
 if has("autocmd")
   filetype plugin indent on
 endif
 
-autocmd BufRead * python setIndentation()
-
-python << EOF
-def setIndentation():
-   import vim
-   maxSearch = 1000     #  max number of lines to search through
-
-   indentSpaces = None
-   cb = vim.current.buffer
-   indentCount = { ' ' : 0, '\t' : 0 }
-   justSawDefOrClassLine = 0
-
-   for i in xrange(0, min(maxSearch, len(cb))):
-      line = cb[i]
-      if not line: continue
-#for i in xrange(0, min(maxSearch, len(cb))):  [CONTINUED]
-      #  add to tab versus space count
-      if line[0] in ' \t':
-         indentCount[line[0]] = indentCount.get(line[0], 0) + 1
-
-   #  more lines started with space
-   if indentCount[' '] > indentCount['\t']:
-      vim.command('set smarttab tabstop=8 expandtab')
-      if indentSpaces:
-         vim.command('set ts=%d sw=%d' % ( indentSpaces, indentSpaces ))
-
-   #  more lines started with tab
-   else:
-      vim.command('set softtabstop=3 ts=3 sw=3')
-EOF
 
 "Autocomplete------------------------------------------
+
+if has("autocmd")
+    autocmd FileType ruby set omnifunc=rubycomplete#Complete
+    autocmd FileType ruby let g:rubycomplete_buffer_loading=1
+    autocmd FileType ruby let g:rubycomplete_classes_in_global=1
+endif
 
 autocmd FileType python set omnifunc=pythoncomplete#Complete
 autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
@@ -124,26 +103,5 @@ set noswapfile
 
 
 
-"syntax checking-errors-debugging------------------------------------
-
-syn match pythonError "^\s*def\s\+\w\+(.*)\s*$" display
-syn match pythonError "^\s*class\s\+\w\+(.*)\s*$" display
-syn match pythonError "^\s*for\s.*[^:]$" display
-syn match pythonError "^\s*except\s*$" display
-syn match pythonError "^\s*finally\s*$" display
-syn match pythonError "^\s*try\s*$" display
-syn match pythonError "^\s*else\s*$" display
-syn match pythonError "^\s*else\s*[^:].*" display
-syn match pythonError "^\s*if\s.*[^\:]$" display
-syn match pythonError "^\s*except\s.*[^\:]$" display
-syn match pythonError "[;]$" display
-syn keyword pythonError         do
-
-" Syntax checking entire file
-" Usage: :make (check file)
-" :clist (view list of errors)
-" :cn, :cp (move around list of errors)
-autocmd BufRead *.py set makeprg=python\ -c\ \"import\ py_compile,sys;\ sys.stderr=sys.stdout;\ py_compile.compile(r'%')\"
-autocmd BufRead *.py set efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
 
 
