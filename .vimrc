@@ -24,6 +24,11 @@ colorscheme solarized
 
 set background=dark
 
+"Vim css-colors----
+
+
+let g:cssColorVimDoNotMessMyUpdatetime = 1
+
 "Text mappings------------------------------------
 
  " Yank from the cursor to the end of the line, 
@@ -43,7 +48,7 @@ map \n :tabnext<cr>
 map \p :tabprevious<cr>
 map \c :tabclose<cr>
 map \sh :source /usr/share/vim/vim73/vimsh.vim<cr>
-
+nnoremap <leader>w <C-w>v<C-w>l
 
 " reopening a file
 if has("autocmd")
